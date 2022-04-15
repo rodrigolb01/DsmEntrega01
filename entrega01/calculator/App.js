@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, StatusBar, SafeAreaView } from 'react-native';
+import { evaluate } from 'mathjs';
 import  Row  from './src/components/Row';
 import  Button  from './src/components/Button';
 
@@ -11,27 +12,28 @@ export default function App() {
 
   const closeInput = () => {
     let op = temp.join('');
-    operants.push(parseFloat(op))
+    operants.push( isNaN(parseFloat(op)) ? 0 : parseFloat(op) )
     temp = [];
   }
 
   const calculate = () => {
     let res = operants[0];
+
     for(let i=1; i< operants.length; i++)
     {
       switch(operators[i-1])
       {
-        case '/' : res = res / operants[i] ;break;
-        case '*' : res = res * operants[i] ;break;
-        case '-' : res = res - operants[i] ;break;
-        case '+' : res = res + operants[i] ;break;
+        case '/' : res = evaluate(`${res} / ${operants[i]}`) ;break;
+        case '*' : res = evaluate(`${res} * ${operants[i]}`) ;break;
+        case '-' : res = evaluate(`${res} - ${operants[i]}`) ;break;
+        case '+' : res = evaluate(`${res} + ${operants[i]}`) ;break;
         default : break;
       }
     };
     setInput(res.toString());
   }
 
-  const setUp = () => {
+  const setup = () => {
     [...input].forEach( e => {
       if(e !== '/' &&
          e !== '*' &&
@@ -121,8 +123,7 @@ export default function App() {
 
   const onKeyEqualsPush = () => {
     setInput(input + '=');
-    console.log('input is :' + input);
-    setUp();
+    setup();
   }
 
   return (
